@@ -1,0 +1,94 @@
+<!-- Base security script to be included in all templates -->
+<script>
+    // Prevent screenshots and screen recordings
+    document.addEventListener('keydown', function(e) {
+        // Detect print screen and other key combinations
+        if (e.key === 'PrintScreen' || 
+            (e.ctrlKey && e.key === 'p') || 
+            (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+            (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+            (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+            (e.ctrlKey && e.shiftKey && e.key === 'E') ||
+            (e.ctrlKey && e.key === 's') ||
+            (e.metaKey && e.key === 's')) {
+            e.preventDefault();
+            alert("Screenshots and screen recordings are not allowed for security reasons.");
+            return false;
+        }
+    });
+    
+    // Detect when visibility changes (user switches tabs)
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden') {
+            // User might be trying to screenshot or record
+            console.log("Tab visibility changed - potential screen capture attempt");
+        }
+    });
+    
+    // Disable right-click
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        alert("Right-click is disabled for security reasons.");
+        return false;
+    });
+    
+    // Disable text selection
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Disable copy
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+        alert("Copying content is disabled for security reasons.");
+        return false;
+    });
+    
+    // Disable drag and drop
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+    
+    // Detect and block screen capture API
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        navigator.mediaDevices.getDisplayMedia = function() {
+            alert("Screen recording is not allowed for security reasons.");
+            return new Promise((resolve, reject) => {
+                reject(new Error('Screen recording is disabled'));
+            });
+        };
+    }
+    
+    // Detect and block screen capture API (alternative method)
+    if (navigator.getDisplayMedia) {
+        navigator.getDisplayMedia = function() {
+            alert("Screen recording is not allowed for security reasons.");
+            return new Promise((resolve, reject) => {
+                reject(new Error('Screen recording is disabled'));
+            });
+        };
+    }
+    
+    // Block F12 key (developer tools)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12') {
+            e.preventDefault();
+            alert("Developer tools are disabled for security reasons.");
+            return false;
+        }
+    });
+    
+    // Additional protection against dev tools
+    function devToolsChecker() {
+        const widthThreshold = window.outerWidth - window.innerWidth > 160;
+        const heightThreshold = window.outerHeight - window.innerHeight > 160;
+        if (widthThreshold || heightThreshold) {
+            alert("Developer tools detected. Please close them to continue.");
+        }
+    }
+    
+    setInterval(devToolsChecker, 1000);
+</script>
+

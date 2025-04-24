@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learning Roadmap Generator - Confusion Detection</title>
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+          --primary-color: #4361ee;
+          --primary-dark: #3a56d4;
+          --secondary-color: #7209b7;
+          --text-color: #333;
+          --text-light: #666;
+          --bg-color: #f8f9fa;
+          --white: #ffffff;
+          --success: #4CAF50;
+          --danger: #f44336;
+          --warning: #ff9800;
+          --info: #2196F3;
+          --border-radius: 12px;
+          --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+          --transition: all 0.3s ease;
+      }
+      
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      body {
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          line-height: 1.6;
+      }
+      
+      .navbar {
+          background-color: var(--white);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 15px 0;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+      }
+      
+      .navbar-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      
+      .navbar-brand {
+          font-size: 24px;
+          font-weight: 700;
+          color: var(--primary-color);
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+      }
+      
+      .navbar-brand i {
+          margin-right: 10px;
+          font-size: 28px;
+      }
+      
+      .navbar-nav {
+          display: flex;
+          list-style: none;
+      }
+      
+      .nav-item {
+          margin-left: 25px;
+      }
+      
+      .nav-link {
+          color: var(--text-color);
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 500;
+          transition: var(--transition);
+          position: relative;
+          padding: 5px 0;
+      }
+      
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: var(--primary-color);
+          transition: var(--transition);
+      }
+      
+      .nav-link:hover {
+          color: var(--primary-color);
+      }
+      
+      .nav-link:hover::after {
+          width: 100%;
+      }
+      
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 40px 20px;
+      }
+      
+      .page-header {
+          text-align: center;
+          margin-bottom: 40px;
+      }
+      
+      .page-title {
+          font-size: 36px;
+          font-weight: 700;
+          color: var(--text-color);
+          margin-bottom: 15px;
+      }
+      
+      .page-subtitle {
+          font-size: 18px;
+          color: var(--text-light);
+          max-width: 700px;
+          margin: 0 auto;
+      }
+      
+      .roadmap-generator {
+          background-color: var(--white);
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          padding: 30px;
+          margin-bottom: 40px;
+          max-width: 800px;
+          margin-left: auto;
+          margin-right: auto;
+      }
+      
+      .roadmap-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+      
+      .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+      
+      .form-label {
+          font-size: 16px;
+          font-weight: 500;
+          color: var(--text-color);
+      }
+      
+      .form-control {
+          padding: 12px 15px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-size: 16px;
+          transition: var(--transition);
+      }
+      
+      .form-control:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+      
+      .btn {
+          display: inline-block;
+          background-color: var(--primary-color);
+          color: var(--white);
+          padding: 12px 25px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 500;
+          transition: var(--transition);
+          border: none;
+          cursor: pointer;
+          text-align: center;
+      }
+      
+      .btn:hover {
+          background-color: var(--primary-dark);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+      }
+      
+      .btn:active {
+          transform: translateY(0);
+      }
+      
+      .roadmap-container {
+          margin-top: 40px;
+      }
+      
+      .roadmap-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 30px;
+      }
+      
+      .roadmap-title {
+          font-size: 28px;
+          font-weight: 600;
+          color: var(--text-color);
+      }
+      
+      .roadmap-content {
+          background-color: var(--white);
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          padding: 30px;
+          line-height: 1.8;
+      }
+      
+      .roadmap-content h1 {
+          font-size: 28px;
+          margin-bottom: 20px;
+          color: var(--text-color);
+      }
+      
+      .roadmap-content h2 {
+          font-size: 24px;
+          margin-top: 30px;
+          margin-bottom: 15px;
+          color: var(--text-color);
+          border-bottom: 1px solid #eee;
+          padding-bottom: 10px;
+      }
+      
+      .roadmap-content h3 {
+          font-size: 20px;
+          margin-top: 25px;
+          margin-bottom: 10px;
+          color: var(--text-color);
+      }
+      
+      .roadmap-content p {
+          margin-bottom: 15px;
+          font-size: 16px;
+          color: var(--text-color);
+      }
+      
+      .roadmap-content ul, .roadmap-content ol {
+          margin-bottom: 20px;
+          padding-left: 20px;
+      }
+      
+      .roadmap-content li {
+          margin-bottom: 10px;
+          font-size: 16px;
+          color: var(--text-color);
+      }
+      
+      .roadmap-content a {
+          color: var(--primary-color);
+          text-decoration: none;
+          transition: var(--transition);
+      }
+      
+      .roadmap-content a:hover {
+          text-decoration: underline;
+      }
+      
+      .roadmap-content blockquote {
+          border-left: 4px solid var(--primary-color);
+          padding: 15px;
+          margin: 20px 0;
+          background-color: rgba(67, 97, 238, 0.05);
+          border-radius: 0 8px 8px 0;
+      }
+      
+      .roadmap-content code {
+          background-color: #f5f5f5;
+          padding: 2px 5px;
+          border-radius: 4px;
+          font-family: monospace;
+          font-size: 14px;
+      }
+      
+      .roadmap-content pre {
+          background-color: #f5f5f5;
+          padding: 15px;
+          border-radius: 8px;
+          overflow-x: auto;
+          margin: 20px 0;
+      }
+      
+      .roadmap-content pre code {
+          background-color: transparent;
+          padding: 0;
+      }
+      
+      .action-buttons {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin-top: 30px;
+      }
+      
+      .flash-messages {
+          margin-bottom: 30px;
+      }
+      
+      .flash-message {
+          padding: 15px;
+          border-radius: var(--border-radius);
+          margin-bottom: 15px;
+          font-size: 14px;
+          animation: fadeIn 0.5s ease;
+      }
+      
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .flash-message.success {
+          background-color: rgba(76, 175, 80, 0.1);
+          color: var(--success);
+          border-left: 4px solid var(--success);
+      }
+      
+      .flash-message.danger {
+          background-color: rgba(244, 67, 54, 0.1);
+          color: var(--danger);
+          border-left: 4px solid var(--danger);
+      }
+      
+      .flash-message.info {
+          background-color: rgba(33, 150, 243, 0.1);
+          color: var(--info);
+          border-left: 4px solid var(--info);
+      }
+      
+      .loading {
+          display: none;
+          text-align: center;
+          padding: 20px;
+      }
+      
+      .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid rgba(67, 97, 238, 0.2);
+          border-radius: 50%;
+          border-top-color: var(--primary-color);
+          animation: spin 1s ease-in-out infinite;
+          margin: 0 auto 15px;
+      }
+      
+      @keyframes spin {
+          to { transform: rotate(360deg); }
+      }
+      
+      /* Responsive styles */
+      @media (max-width: 768px) {
+          .page-title {
+              font-size: 28px;
+          }
+          
+          .page-subtitle {
+              font-size: 16px;
+          }
+          
+          .roadmap-generator {
+              padding: 20px;
+          }
+          
+          .roadmap-content {
+              padding: 20px;
+          }
+          
+          .roadmap-content h1 {
+              font-size: 24px;
+          }
+          
+          .roadmap-content h2 {
+              font-size: 20px;
+          }
+          
+          .roadmap-content h3 {
+              font-size: 18px;
+          }
+      }
+      
+      @media (max-width: 576px) {
+          .roadmap-header {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+          }
+          
+          .roadmap-title {
+              font-size: 24px;
+          }
+          
+          .action-buttons {
+              flex-direction: column;
+              width: 100%;
+          }
+          
+          .action-buttons .btn {
+              width: 100%;
+          }
+      }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/themes/prism.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+      <div class="navbar-container">
+          <a href="{{ url_for('index') }}" class="navbar-brand">
+              <i class="fas fa-brain"></i> Confusion Detection
+          </a>
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('courses') }}" class="nav-link">Courses</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('recommend_courses') }}" class="nav-link">Recommendations</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('generate_quiz_page') }}" class="nav-link">Quiz</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('generate_roadmap_page') }}" class="nav-link">Roadmap</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+              </li>
+          </ul>
+      </div>
+  </nav>
+  
+  <div class="container">
+      <div class="flash-messages">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                  {% for category, message in messages %}
+                      <div class="flash-message {{ category }}">{{ message }}</div>
+                  {% endfor %}
+              {% endif %}
+          {% endwith %}
+      </div>
+      
+      <div class="page-header">
+          <h1 class="page-title">AI Learning Roadmap Generator</h1>
+          <p class="page-subtitle">Get a personalized learning path for any topic, from beginner to advanced level, generated by our AI system.</p>
+      </div>
+      
+      {% if not content %}
+          <div class="roadmap-generator">
+              <form method="POST" action="{{ url_for('generate_roadmap_page') }}" class="roadmap-form" id="roadmap-form">
+                  <div class="form-group">
+                      <label for="topic" class="form-label">What topic would you like to learn?</label>
+                      <input type="text" id="topic" name="topic" class="form-control" placeholder="e.g., Machine Learning, Web Development, Data Science..." required>
+                  </div>
+                  
+                  <button type="submit" class="btn" id="submit-btn">Generate Roadmap</button>
+              </form>
+          </div>
+          
+          <div class="loading" id="loading">
+              <div class="loading-spinner"></div>
+              <p>Generating your personalized learning roadmap...</p>
+          </div>
+      {% else %}
+          <div class="roadmap-container">
+              <div class="roadmap-header">
+                  <h2 class="roadmap-title">Learning Roadmap for: {{ topic }}</h2>
+                  <div class="action-buttons">
+                      <a href="{{ url_for('generate_roadmap_page') }}" class="btn" style="background-color: #6c757d;">Generate New Roadmap</a>
+                      <button class="btn" onclick="printRoadmap()">Print Roadmap</button>
+                  </div>
+              </div>
+              
+              <div class="roadmap-content" id="roadmap-content">
+                  <!-- Markdown content will be rendered here -->
+              </div>
+          </div>
+      {% endif %}
+  </div>
+  
+  <script>
+      {% if not content %}
+          // Show loading indicator when form is submitted
+          document.getElementById('roadmap-form').addEventListener('submit', function() {
+              document.getElementById('loading').style.display = 'block';
+              document.getElementById('submit-btn').disabled = true;
+              document.getElementById('submit-btn').textContent = 'Generating...';
+          });
+      {% else %}
+          // Render markdown content
+          document.addEventListener('DOMContentLoaded', function() {
+              const roadmapContent = document.getElementById('roadmap-content');
+              const markdownContent = `{{ content|safe }}`;
+              roadmapContent.innerHTML = marked.parse(markdownContent);
+          });
+          
+          // Print roadmap function
+          function printRoadmap() {
+              const printContents = document.getElementById('roadmap-content').innerHTML;
+              const originalContents = document.body.innerHTML;
+              
+              document.body.innerHTML = `
+                  <div style="padding: 20px;">
+                      <h1 style="text-align: center; margin-bottom: 20px;">Learning Roadmap for: {{ topic }}</h1>
+                      ${printContents}
+                  </div>
+              `;
+              
+              window.print();
+              document.body.innerHTML = originalContents;
+              location.reload();
+          }
+      {% endif %}
+      
+      // Prevent screenshots and screen recordings
+      document.addEventListener('keydown', function(e) {
+          // Detect print screen
+          if (e.key === 'PrintScreen' || 
+              (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'E')) {
+              e.preventDefault();
+              alert("Screenshots and screen recordings are not allowed for security reasons.");
+          }
+      });
+      
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          alert("Right-click is disabled for security reasons.");
+      });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.24.1/prism.js"></script>
+</body>
+</html>
+

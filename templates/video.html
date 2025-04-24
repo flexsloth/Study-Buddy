@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Player - Confusion Detection</title>
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+          --primary-color: #4361ee;
+          --primary-dark: #3a56d4;
+          --secondary-color: #7209b7;
+          --text-color: #333;
+          --text-light: #666;
+          --bg-color: #f8f9fa;
+          --white: #ffffff;
+          --success: #4CAF50;
+          --danger: #f44336;
+          --warning: #ff9800;
+          --info: #2196F3;
+          --border-radius: 12px;
+          --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+          --transition: all 0.3s ease;
+      }
+      
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+      
+      body {
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          line-height: 1.6;
+      }
+      
+      .navbar {
+          background-color: var(--white);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 15px 0;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+      }
+      
+      .navbar-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      
+      .navbar-brand {
+          font-size: 24px;
+          font-weight: 700;
+          color: var(--primary-color);
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+      }
+      
+      .navbar-brand i {
+          margin-right: 10px;
+          font-size: 28px;
+      }
+      
+      .navbar-nav {
+          display: flex;
+          list-style: none;
+      }
+      
+      .nav-item {
+          margin-left: 25px;
+      }
+      
+      .nav-link {
+          color: var(--text-color);
+          text-decoration: none;
+          font-size: 16px;
+          font-weight: 500;
+          transition: var(--transition);
+          position: relative;
+          padding: 5px 0;
+      }
+      
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: var(--primary-color);
+          transition: var(--transition);
+      }
+      
+      .nav-link:hover {
+          color: var(--primary-color);
+      }
+      
+      .nav-link:hover::after {
+          width: 100%;
+      }
+      
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 40px 20px;
+      }
+      
+      .video-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          margin-bottom: 40px;
+      }
+      
+      .main-video {
+          flex: 1;
+          min-width: 300px;
+      }
+      
+      .webcam-container {
+          width: 300px;
+      }
+      
+      .youtube-container {
+          position: relative;
+          padding-bottom: 56.25%; /* 16:9 aspect ratio */
+          height: 0;
+          overflow: hidden;
+          border-radius: var(--border-radius);
+          box-shadow: var(--box-shadow);
+          background-color: #000;
+      }
+      
+      .youtube-container iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: none;
+      }
+      
+      .webcam-view {
+          width: 100%;
+          height: 225px;
+          background-color: #000;
+          border-radius: var(--border-radius);
+          margin-bottom: 10px;
+          overflow: hidden;
+          position: relative;
+      }
+      
+      #webcam {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+      }
+      
+      .no-face-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: white;
+          font-size: 16px;
+          font-weight: 500;
+          text-align: center;
+          padding: 20px;
+          display: none;
+      }
+      
+      .detection-status {
+          background-color: white;
+          border-radius: var(--border-radius);
+          padding: 15px;
+          box-shadow: var(--box-shadow);
+          margin-bottom: 20px;
+      }
+      
+      .status-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+          color: var(--text-color);
+      }
+      
+      .status-indicator {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+      }
+      
+      .status-dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          margin-right: 10px;
+      }
+      
+      .status-dot.active {
+          background-color: var(--success);
+      }
+      
+      .status-dot.inactive {
+          background-color: #ccc;
+      }
+      
+      .status-text {
+          font-size: 14px;
+          color: var(--text-light);
+      }
+      
+      .detection-result {
+          background-color: white;
+          border-radius: var(--border-radius);
+          padding: 15px;
+          box-shadow: var(--box-shadow);
+      }
+      
+      .result-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+          color: var(--text-color);
+      }
+      
+      .result-item {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 0;
+          border-bottom: 1px solid #eee;
+      }
+      
+      .result-label {
+          font-weight: bold;
+          color: var(--text-light);
+      }
+      
+      .result-value {
+          color: var(--text-color);
+      }
+      
+      .result-value.confused {
+          color: var(--danger);
+          font-weight: bold;
+      }
+      
+      .result-value.neutral {
+          color: var(--info);
+      }
+      
+      .result-value.no-face {
+          color: var(--warning);
+      }
+      
+      .flash-messages {
+          margin-bottom: 20px;
+      }
+      
+      .flash-message {
+          padding: 15px;
+          border-radius: var(--border-radius);
+          margin-bottom: 15px;
+          font-size: 14px;
+          animation: fadeIn 0.5s ease;
+      }
+      
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .flash-message.success {
+          background-color: rgba(76, 175, 80, 0.1);
+          color: var(--success);
+          border-left: 4px solid var(--success);
+      }
+      
+      .flash-message.danger {
+          background-color: rgba(244, 67, 54, 0.1);
+          color: var(--danger);
+          border-left: 4px solid var(--danger);
+      }
+      
+      .flash-message.info {
+          background-color: rgba(33, 150, 243, 0.1);
+          color: var(--info);
+          border-left: 4px solid var(--info);
+      }
+      
+      .page-title {
+          font-size: 32px;
+          font-weight: 700;
+          color: var(--text-color);
+          margin-bottom: 20px;
+      }
+      
+      .video-info {
+          background-color: white;
+          border-radius: var(--border-radius);
+          padding: 20px;
+          box-shadow: var(--box-shadow);
+          margin-bottom: 30px;
+      }
+      
+      .video-title {
+          font-size: 24px;
+          font-weight: 600;
+          margin-bottom: 10px;
+          color: var(--text-color);
+      }
+      
+      .video-meta {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 15px;
+          flex-wrap: wrap;
+      }
+      
+      .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 14px;
+          color: var(--text-light);
+      }
+      
+      .meta-item i {
+          color: var(--primary-color);
+      }
+      
+      .video-description {
+          font-size: 16px;
+          color: var(--text-color);
+          line-height: 1.6;
+      }
+      
+      footer {
+          background-color: var(--white);
+          padding: 30px 0;
+          text-align: center;
+          margin-top: 50px;
+          border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      
+      .footer-content {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+      }
+      
+      .footer-text {
+          font-size: 14px;
+          color: var(--text-light);
+      }
+      
+      /* Responsive styles */
+      @media (max-width: 768px) {
+          .video-container {
+              flex-direction: column;
+          }
+          
+          .webcam-container {
+              width: 100%;
+          }
+      }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+      <div class="navbar-container">
+          <a href="{{ url_for('index') }}" class="navbar-brand">
+              <i class="fas fa-brain"></i> Confusion Detection
+          </a>
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('courses') }}" class="nav-link">Courses</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('recommend_courses') }}" class="nav-link">Recommendations</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('generate_quiz_page') }}" class="nav-link">Quiz</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('generate_roadmap_page') }}" class="nav-link">Roadmap</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+              </li>
+              <li class="nav-item">
+                  <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+              </li>
+          </ul>
+      </div>
+  </nav>
+  
+  <div class="container">
+      <div class="flash-messages">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                  {% for category, message in messages %}
+                      <div class="flash-message {{ category }}">{{ message }}</div>
+                  {% endfor %}
+              {% endif %}
+          {% endwith %}
+      </div>
+      
+      <div class="video-info">
+          <h1 class="video-title">{{ course.title }}</h1>
+          <div class="video-meta">
+              <div class="meta-item">
+                  <i class="far fa-clock"></i>
+                  <span>{{ course.duration }}</span>
+              </div>
+              <div class="meta-item">
+                  <i class="fas fa-signal"></i>
+                  <span>{{ course.level }}</span>
+              </div>
+              <div class="meta-item">
+                  <i class="fas fa-tag"></i>
+                  <span>{{ course.category }}</span>
+              </div>
+          </div>
+          <p class="video-description">{{ course.description }}</p>
+      </div>
+      
+      <div class="video-container">
+          <div class="main-video">
+              <div class="youtube-container">
+                  <iframe id="youtube-player" src="https://www.youtube.com/embed/{{ video_id }}?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+          </div>
+          
+          <div class="webcam-container">
+              <div class="detection-status">
+                  <div class="status-title">Detection Status</div>
+                  <div class="status-indicator">
+                      <div id="webcam-status" class="status-dot inactive"></div>
+                      <div class="status-text">Webcam</div>
+                  </div>
+                  <div class="status-indicator">
+                      <div id="detection-status" class="status-dot inactive"></div>
+                      <div class="status-text">Detection Active</div>
+                  </div>
+              </div>
+              
+              <div class="webcam-view">
+                  <video id="webcam" autoplay playsinline></video>
+                  <div id="no-face-overlay" class="no-face-overlay">
+                      <div>
+                          <i class="fas fa-user-slash fa-2x" style="margin-bottom: 10px;"></i>
+                          <p>No face detected</p>
+                          <p style="font-size: 14px; margin-top: 5px;">Please position yourself in front of the camera</p>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="detection-result">
+                  <div class="result-title">Real-time Analysis</div>
+                  <div class="result-item">
+                      <div class="result-label">Status:</div>
+                      <div id="detection-result" class="result-value">Waiting...</div>
+                  </div>
+                  <div class="result-item">
+                      <div class="result-label">Confidence:</div>
+                      <div id="detection-confidence" class="result-value">-</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <footer>
+      <div class="footer-content">
+          <p class="footer-text">&copy; 2025 Confusion Detection. All rights reserved.</p>
+      </div>
+  </footer>
+  
+  <script>
+      // Global variables
+      let webcam;
+      let player;
+      let isDetectionActive = false;
+      let detectionInterval;
+      let lastVideoTime = 0;
+      let videoPlaying = false;
+      let videoId = "{{ video_num }}";
+      let noFaceDetected = false;
+      let noFaceTimeout;
+      
+      // Load YouTube API
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      
+      // Initialize YouTube player when API is ready
+      function onYouTubeIframeAPIReady() {
+          player = new YT.Player('youtube-player', {
+              events: {
+                  'onReady': onPlayerReady,
+                  'onStateChange': onPlayerStateChange
+              }
+          });
+      }
+      
+      // When player is ready
+      function onPlayerReady(event) {
+          console.log("YouTube player ready");
+      }
+      
+      // When player state changes
+      function onPlayerStateChange(event) {
+          if (event.data === YT.PlayerState.PLAYING) {
+              videoPlaying = true;
+              startDetection();
+          } else {
+              videoPlaying = false;
+              stopDetection();
+          }
+          
+          // Update watch duration when video ends or is paused
+          if (event.data === YT.PlayerState.ENDED || event.data === YT.PlayerState.PAUSED) {
+              updateWatchDuration();
+          }
+      }
+      
+      // Update watch duration
+      function updateWatchDuration() {
+          if (!player) return;
+          
+          const currentTime = player.getCurrentTime();
+          
+          fetch('/update_watch_duration', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  videoId: videoId,
+                  duration: Math.floor(currentTime)
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('Watch duration updated:', data);
+          })
+          .catch(error => {
+              console.error('Error updating watch duration:', error);
+          });
+      }
+      
+      // Initialize webcam
+      async function initWebcam() {
+          try {
+              const stream = await navigator.mediaDevices.getUserMedia({ 
+                  video: { 
+                      width: 640,
+                      height: 480,
+                      facingMode: "user"
+                  } 
+              });
+              
+              webcam = document.getElementById('webcam');
+              webcam.srcObject = stream;
+              
+              document.getElementById('webcam-status').classList.remove('inactive');
+              document.getElementById('webcam-status').classList.add('active');
+              
+              console.log("Webcam initialized");
+              return true;
+          } catch (error) {
+              console.error("Error accessing webcam:", error);
+              document.getElementById('detection-result').textContent = "Webcam access denied";
+              document.getElementById('detection-result').className = "result-value no-face";
+              return false;
+          }
+      }
+      
+      // Start detection
+      function startDetection() {
+          if (!isDetectionActive && videoPlaying) {
+              isDetectionActive = true;
+              document.getElementById('detection-status').classList.remove('inactive');
+              document.getElementById('detection-status').classList.add('active');
+              
+              // Start detection interval
+              detectionInterval = setInterval(detectConfusion, 2000); // Check every 2 seconds
+              console.log("Detection started");
+          }
+      }
+      
+      // Stop detection
+      function stopDetection() {
+          if (isDetectionActive) {
+              isDetectionActive = false;
+              document.getElementById('detection-status').classList.remove('active');
+              document.getElementById('detection-status').classList.add('inactive');
+              
+              // Clear detection interval
+              clearInterval(detectionInterval);
+              console.log("Detection stopped");
+          }
+      }
+      
+      // Show no face overlay
+      function showNoFaceOverlay() {
+          if (!noFaceDetected) {
+              noFaceDetected = true;
+              document.getElementById('no-face-overlay').style.display = 'flex';
+              document.getElementById('detection-result').textContent = "No face detected";
+              document.getElementById('detection-result').className = "result-value no-face";
+              document.getElementById('detection-confidence').textContent = "-";
+          }
+      }
+      
+      // Hide no face overlay
+      function hideNoFaceOverlay() {
+          if (noFaceDetected) {
+              noFaceDetected = false;
+              document.getElementById('no-face-overlay').style.display = 'none';
+          }
+      }
+      
+      // Detect confusion
+      function detectConfusion() {
+          if (!webcam || !videoPlaying) return;
+          
+          const currentVideoTime = player.getCurrentTime();
+          
+          // Skip if video hasn't progressed
+          if (Math.abs(currentVideoTime - lastVideoTime) < 0.5) {
+              return;
+          }
+          
+          lastVideoTime = currentVideoTime;
+          
+          // Create canvas to capture webcam frame
+          const canvas = document.createElement('canvas');
+          canvas.width = webcam.videoWidth;
+          canvas.height = webcam.videoHeight;
+          const ctx = canvas.getContext('2d');
+          
+          // Check if webcam is ready
+          if (webcam.videoWidth === 0 || webcam.videoHeight === 0) {
+              console.log("Webcam not ready yet");
+              return;
+          }
+          
+          // Draw webcam frame to canvas
+          ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+          
+          // Convert canvas to base64 image
+          const imageData = canvas.toDataURL('image/jpeg', 0.8);
+          
+          // Send frame to server for processing
+          fetch('/process_frame', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  image: imageData,
+                  videoTime: currentVideoTime,
+                  videoId: videoId
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.status === 'no_face') {
+                  // Show no face overlay after a short delay to avoid flickering
+                  clearTimeout(noFaceTimeout);
+                  noFaceTimeout = setTimeout(showNoFaceOverlay, 500);
+              } else if (data.status === 'success') {
+                  // Hide no face overlay
+                  clearTimeout(noFaceTimeout);
+                  hideNoFaceOverlay();
+                  
+                  document.getElementById('detection-result').textContent = data.predicted_class;
+                  document.getElementById('detection-result').className = `result-value ${data.predicted_class.toLowerCase()}`;
+                  document.getElementById('detection-confidence').textContent = `${data.confidence}%`;
+              } else {
+                  console.error("Error processing frame:", data.error);
+              }
+          })
+          .catch(error => {
+              console.error("Error sending frame to server:", error);
+          });
+      }
+      
+      // Initialize when page loads
+      window.addEventListener('load', async () => {
+          const webcamInitialized = await initWebcam();
+          if (webcamInitialized) {
+              // Wait for YouTube player to be ready
+              const checkYouTubePlayer = setInterval(() => {
+                  if (player && typeof player.getPlayerState === 'function') {
+                      clearInterval(checkYouTubePlayer);
+                      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                          startDetection();
+                      }
+                  }
+              }, 500);
+          }
+      });
+      
+      // Clean up when page unloads
+      window.addEventListener('beforeunload', () => {
+          stopDetection();
+          updateWatchDuration();
+          
+          if (webcam && webcam.srcObject) {
+              webcam.srcObject.getTracks().forEach(track => track.stop());
+          }
+      });
+      
+      // Prevent screenshots and screen recordings
+      document.addEventListener('keydown', function(e) {
+          // Detect print screen
+          if (e.key === 'PrintScreen' || 
+              (e.ctrlKey && e.key === 'p') || 
+              (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+              (e.ctrlKey && e.shiftKey && e.key === 'E')) {
+              e.preventDefault();
+              alert("Screenshots and screen recordings are not allowed for security reasons.");
+          }
+      });
+      
+      // Detect when visibility changes (user switches tabs)
+      document.addEventListener('visibilitychange', function() {
+          if (document.visibilityState === 'hidden') {
+              // User might be trying to screenshot or record
+              console.log("Tab visibility changed - potential screen capture attempt");
+          }
+      });
+      
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+          alert("Right-click is disabled for security reasons.");
+      });
+  </script>
+</body>
+</html>
+

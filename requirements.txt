@@ -1,0 +1,10 @@
+Flask
+Flask-SQLAlchemy
+Werkzeug
+Pillow
+numpy
+torch
+torchvision
+timm
+google-generativeai
+python-dotenv

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add New Course - Admin Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary-color: #7209b7;
+    --text-color: #333;
+    --text-light: #666;
+    --bg-color: #f8f9fa;
+    --white: #ffffff;
+    --success: #4CAF50;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --info: #2196F3;
+    --border-radius: 12px;
+    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 260px;
+    background-color: #333;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-brand i {
+    margin-right: 10px;
+    font-size: 28px;
+}
+
+.sidebar-menu {
+    padding: 20px 0;
+}
+
+.menu-header {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 10px 20px;
+    margin-top: 10px;
+}
+
+.menu-item {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.menu-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-left: 3px solid var(--primary-color);
+}
+
+.menu-item i {
+    margin-right: 10px;
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    bottom: 0;
+    background-color: #333;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.user-details {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+
+.user-role {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Main content styles */
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.page-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+}
+
+.section {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+.form-text {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 5px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.flash-message {
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    font-size: 14px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.flash-message.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+    border-left: 4px solid var(--success);
+}
+
+.flash-message.danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+.flash-message.info {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: var(--info);
+    border-left: 4px solid var(--info);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 70px;
+    }
+    
+    .sidebar-brand span, .menu-item span, .user-details {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 70px;
+    }
+    
+    .sidebar-header, .menu-item {
+        text-align: center;
+        padding: 15px 5px;
+    }
+    
+    .menu-item i {
+        margin-right: 0;
+    }
+    
+    .user-info {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+<div class="sidebar-header">
+    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-brand">
+        <i class="fas fa-brain"></i> <span>Admin Panel</span>
+    </a>
+</div>
+
+<div class="sidebar-menu">
+    <div class="menu-header">Main</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="menu-item">
+        <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+    </a>
+    <a href="{{ url_for('admin_courses') }}" class="menu-item active">
+        <i class="fas fa-graduation-cap"></i> <span>Courses</span>
+    </a>
+    <a href="{{ url_for('admin_user_tracking') }}" class="menu-item">
+        <i class="fas fa-users"></i> <span>Users</span>
+    </a>
+    
+    <div class="menu-header">Analytics</div>
+    <a href="{{ url_for('admin_confusion_logs') }}" class="menu-item">
+        <i class="fas fa-chart-line"></i> <span>Confusion Logs</span>
+    </a>
+    <a href="{{ url_for('admin_video_analytics') }}" class="menu-item">
+        <i class="fas fa-chart-bar"></i> <span>Video Analytics</span>
+    </a>
+    
+    <div class="menu-header">System</div>
+    <a href="{{ url_for('index') }}" class="menu-item">
+        <i class="fas fa-home"></i> <span>Main Site</span>
+    </a>
+    <a href="{{ url_for('logout') }}" class="menu-item">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+    </a>
+</div>
+
+<div class="sidebar-footer">
+    <div class="user-info">
+        <div class="user-avatar">A</div>
+        <div class="user-details">
+            <div class="user-name">Admin</div>
+            <div class="user-role">Administrator</div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+<div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="page-header">
+    <h1 class="page-title">Add New Course</h1>
+    <div class="page-actions">
+        <a href="{{ url_for('admin_courses') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Courses
+        </a>
+    </div>
+</div>
+
+<div class="section">
+    <div class="section-header">
+        <h2 class="section-title">Course Information</h2>
+    </div>
+    
+    <form method="POST" action="{{ url_for('admin_add_course') }}">
+        <div class="form-group">
+            <label for="title" class="form-label">Course Title</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+            <div class="form-text">Enter a descriptive title for the course</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+            <div class="form-text">Provide a detailed description of what students will learn</div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="youtube_id" class="form-label">YouTube Video URL or ID</label>
+                <input type="text" id="youtube_id" name="youtube_id" class="form-control" required>
+                <div class="form-text">Enter the YouTube video URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ) or just the ID (e.g., dQw4w9WgXcQ)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="thumbnail_url" class="form-label">Thumbnail URL</label>
+                <input type="text" id="thumbnail_url" name="thumbnail_url" class="form-control">
+                <div class="form-text">Enter the URL for the course thumbnail image (leave empty to use YouTube thumbnail)</div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="duration" class="form-label">Duration</label>
+                <input type="text" id="duration" name="duration" class="form-control" required>
+                <div class="form-text">Enter the course duration (e.g., 45 minutes, 1.5 hours)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="level" class="form-label">Difficulty Level</label>
+                <select id="level" name="level" class="form-control" required>
+                    <option value="">Select Level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="category" class="form-control" required>
+                    <option value="">Select Category</option>
+                    <option value="Programming">Programming</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Mobile Development">Mobile Development</option>
+                    <option value="Machine Learning">Machine Learning</option>
+                    <option value="Design">Design</option>
+                    <option value="Business">Business</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tags" class="form-label">Tags</label>
+                <input type="text" id="tags" name="tags" class="form-control">
+                <div class="form-text">Enter comma-separated tags (e.g., python, programming, beginner)</div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('admin_courses') }}'">Cancel</button>
+            <button type="submit" class="btn">Add Course</button>
+        </div>
+    </form>
+</div>
+</div>
+
+{% include 'base_security.html' %}
+
+<script>
+// Auto-generate thumbnail URL from YouTube ID or URL
+document.getElementById('youtube_id').addEventListener('blur', function() {
+    const youtubeInput = this.value.trim();
+    if (youtubeInput) {
+        // Extract YouTube ID from URL if needed
+        let youtubeId = youtubeInput;
+        
+        // Check if it's a URL
+        if (youtubeInput.includes('youtube.com') || youtubeInput.includes('youtu.be')) {
+            // Extract ID from various YouTube URL formats
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = youtubeInput.match(regExp);
+            
+            if (match && match[2].length === 11) {
+                youtubeId = match[2];
+            }
+        }
+        
+        // Only set thumbnail if it's a valid YouTube ID (11 characters)
+        if (youtubeId.length === 11) {
+            const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+            document.getElementById('thumbnail_url').value = thumbnailUrl;
+        }
+    }
+});
+</script>
+</body>
+</html>
+

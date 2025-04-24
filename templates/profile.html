@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - Confusion Detection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+  
+  :root {
+      --primary-color: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary-color: #7209b7;
+      --text-color: #333;
+      --text-light: #666;
+      --bg-color: #f8f9fa;
+      --white: #ffffff;
+      --success: #4CAF50;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --info: #2196F3;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+  }
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+  
+  body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+  }
+  
+  .navbar {
+      background-color: var(--white);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+  }
+  
+  .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  
+  .navbar-brand {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+  }
+  
+  .navbar-brand i {
+      margin-right: 10px;
+      font-size: 28px;
+  }
+  
+  .navbar-nav {
+      display: flex;
+      list-style: none;
+  }
+  
+  .nav-item {
+      margin-left: 25px;
+  }
+  
+  .nav-link {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      padding: 5px 0;
+  }
+  
+  .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary-color);
+      transition: var(--transition);
+  }
+  
+  .nav-link:hover {
+      color: var(--primary-color);
+  }
+  
+  .nav-link:hover::after {
+      width: 100%;
+  }
+  
+  .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+  }
+  
+  .profile-header {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 30px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+  }
+  
+  .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      color: white;
+      font-weight: bold;
+  }
+  
+  .profile-info {
+      flex: 1;
+      min-width: 250px;
+  }
+  
+  .profile-name {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--text-color);
+  }
+  
+  .profile-details {
+      margin-bottom: 20px;
+  }
+  
+  .profile-detail {
+      display: flex;
+      margin-bottom: 8px;
+  }
+  
+  .detail-label {
+      width: 100px;
+      font-weight: bold;
+      color: var(--text-light);
+  }
+  
+  .detail-value {
+      color: var(--text-color);
+  }
+  
+  .profile-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+  }
+  
+  .stat-item {
+      background-color: #f9f9f9;
+      border-radius: var(--border-radius);
+      padding: 15px;
+      text-align: center;
+      min-width: 120px;
+  }
+  
+  .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+  }
+  
+  .stat-label {
+      font-size: 14px;
+      color: var(--text-light);
+  }
+  
+  .section {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 30px;
+      margin-bottom: 30px;
+  }
+  
+  .section-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: var(--text-color);
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+  }
+  
+  .table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+  }
+  
+  .table th {
+      font-weight: bold;
+      color: var(--text-color);
+      background-color: #f9f9f9;
+  }
+  
+  .table tr:last-child td {
+      border-bottom: none;
+  }
+  
+  .table tr:hover td {
+      background-color: #f5f5f5;
+  }
+  
+  .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+  }
+  
+  .badge-confused {
+      background-color: #ffecec;
+      color: var(--danger);
+  }
+  
+  .badge-neutral {
+      background-color: #e8f4fd;
+      color: var(--info);
+  }
+  
+  .flash-messages {
+      margin-bottom: 20px;
+  }
+  
+  .flash-message {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+      font-size: 14px;
+      animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .flash-message.success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+  }
+  
+  .flash-message.danger {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+  }
+  
+  .flash-message.info {
+      background-color: rgba(33, 150, 243, 0.1);
+      color: var(--info);
+      border-left: 4px solid var(--info);
+  }
+  
+  .ai-content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+  }
+  
+  .ai-content-card {
+      background-color: #f9f9f9;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      transition: var(--transition);
+      border-left: 4px solid var(--primary-color);
+  }
+  
+  .ai-content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ai-content-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-color);
+  }
+  
+  .ai-content-meta {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 15px;
+  }
+  
+  .ai-content-actions {
+      display: flex;
+      gap: 10px;
+  }
+  
+  .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+  }
+  
+  .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+  }
+  
+  .empty-state {
+      text-align: center;
+      padding: 30px;
+  }
+  
+  .empty-state i {
+      font-size: 48px;
+      color: #ddd;
+      margin-bottom: 15px;
+  }
+  
+  .empty-state h3 {
+      font-size: 18px;
+      color: var(--text-color);
+      margin-bottom: 10px;
+  }
+  
+  .empty-state p {
+      color: var(--text-light);
+      margin-bottom: 20px;
+  }
+  
+  footer {
+      background-color: var(--white);
+      padding: 30px 0;
+      text-align: center;
+      margin-top: 50px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+  }
+  
+  .footer-text {
+      font-size: 14px;
+      color: var(--text-light);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+      .profile-header {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+      }
+      
+      .profile-info {
+          width: 100%;
+      }
+      
+      .profile-detail {
+          flex-direction: column;
+      }
+      
+      .detail-label {
+          width: 100%;
+          margin-bottom: 5px;
+      }
+      
+      .profile-stats {
+          justify-content: center;
+      }
+      
+      .ai-content-grid {
+          grid-template-columns: 1fr;
+      }
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-container">
+      <a href="{{ url_for('index') }}" class="navbar-brand">
+          <i class="fas fa-brain"></i> Confusion Detection
+      </a>
+      <ul class="navbar-nav">
+          <li class="nav-item">
+              <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('courses') }}" class="nav-link">Courses</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('recommend_courses') }}" class="nav-link">Recommendations</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('generate_quiz_page') }}" class="nav-link">Quiz</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('generate_roadmap_page') }}" class="nav-link">Roadmap</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+          </li>
+      </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="flash-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="flash-message {{ category }}">{{ message }}</div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+  </div>
+  
+  <div class="profile-header">
+      <div class="profile-avatar">
+          {{ user.name[0] if user.name else 'U' }}
+      </div>
+      <div class="profile-info">
+          <h1 class="profile-name">{{ user.name }}</h1>
+          <div class="profile-details">
+              <div class="profile-detail">
+                  <div class="detail-label">Username:</div>
+                  <div class="detail-value">{{ user.username }}</div>
+              </div>
+              <div class="profile-detail">
+                  <div class="detail-label">Age:</div>
+                  <div class="detail-value">{{ user.age }}</div>
+              </div>
+              <div class="profile-detail">
+                  <div class="detail-label">Gender:</div>
+                  <div class="detail-value">{{ user.gender }}</div>
+              </div>
+          </div>
+          <div class="profile-stats">
+              <div class="stat-item">
+                  <div class="stat-number">{{ confusion_logs|length if confusion_logs else 0 }}</div>
+                  <div class="stat-label">Confusion Detected</div>
+              </div>
+              <div class="stat-item">
+                  <div class="stat-number">{{ watch_history|length if watch_history else 0 }}</div>
+                  <div class="stat-label">Videos Watched</div>
+              </div>
+              <div class="stat-item">
+                  <div class="stat-number">{{ quizzes|length if quizzes else 0 }}</div>
+                  <div class="stat-label">Quizzes Generated</div>
+              </div>
+              <div class="stat-item">
+                  <div class="stat-number">{{ roadmaps|length if roadmaps else 0 }}</div>
+                  <div class="stat-label">Roadmaps Created</div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  <div class="section">
+      <h2 class="section-title">AI-Generated Content</h2>
+      
+      <h3 style="margin-bottom: 15px; font-size: 18px;">Your Quizzes</h3>
+      {% if quizzes and quizzes|length > 0 %}
+          <div class="ai-content-grid">
+              {% for quiz in quizzes %}
+                  <div class="ai-content-card">
+                      <h4 class="ai-content-title">{{ quiz.topic }}</h4>
+                      <div class="ai-content-meta">
+                          <i class="far fa-calendar-alt"></i> {{ quiz.created_at.strftime('%Y-%m-%d %H:%M') }}
+                      </div>
+                      <div class="ai-content-actions">
+                          <a href="{{ url_for('view_quiz', quiz_id=quiz.id) }}" class="btn">View Quiz</a>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      {% else %}
+          <div class="empty-state">
+              <i class="fas fa-question-circle"></i>
+              <h3>No quizzes yet</h3>
+              <p>You haven't generated any quizzes yet.</p>
+              <a href="{{ url_for('generate_quiz_page') }}" class="btn">Create your first quiz</a>
+          </div>
+      {% endif %}
+      
+      <h3 style="margin: 25px 0 15px; font-size: 18px;">Your Learning Roadmaps</h3>
+      {% if roadmaps and roadmaps|length > 0 %}
+          <div class="ai-content-grid">
+              {% for roadmap in roadmaps %}
+                  <div class="ai-content-card">
+                      <h4 class="ai-content-title">{{ roadmap.topic }}</h4>
+                      <div class="ai-content-meta">
+                          <i class="far fa-calendar-alt"></i> {{ roadmap.created_at.strftime('%Y-%m-%d %H:%M') }}
+                      </div>
+                      <div class="ai-content-actions">
+                          <a href="{{ url_for('view_roadmap', roadmap_id=roadmap.id) }}" class="btn">View Roadmap</a>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      {% else %}
+          <div class="empty-state">
+              <i class="fas fa-map-signs"></i>
+              <h3>No roadmaps yet</h3>
+              <p>You haven't created any learning roadmaps yet.</p>
+              <a href="{{ url_for('generate_roadmap_page') }}" class="btn">Create your first roadmap</a>
+          </div>
+      {% endif %}
+      
+      <h3 style="margin: 25px 0 15px; font-size: 18px;">Your Course Recommendations</h3>
+      {% if recommendations and recommendations|length > 0 %}
+          <div class="ai-content-grid">
+              {% for recommendation in recommendations %}
+                  <div class="ai-content-card">
+                      <h4 class="ai-content-title">{{ recommendation.query }}</h4>
+                      <div class="ai-content-meta">
+                          <i class="far fa-calendar-alt"></i> {{ recommendation.created_at.strftime('%Y-%m-%d %H:%M') }}
+                      </div>
+                      <div class="ai-content-actions">
+                          <a href="{{ url_for('recommend_courses') }}?id={{ recommendation.id }}" class="btn">View Recommendations</a>
+                      </div>
+                  </div>
+              {% endfor %}
+          </div>
+      {% else %}
+          <div class="empty-state">
+              <i class="fas fa-book"></i>
+              <h3>No recommendations yet</h3>
+              <p>You haven't requested any course recommendations yet.</p>
+              <a href="{{ url_for('recommend_courses') }}" class="btn">Get your first recommendations</a>
+          </div>
+      {% endif %}
+  </div>
+  
+  <div class="section">
+      <h2 class="section-title">Recent Confusion Logs</h2>
+      {% if confusion_logs and confusion_logs|length > 0 %}
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Video</th>
+                      <th>Timestamp</th>
+                      <th>Confidence</th>
+                      <th>Detected At</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for log in confusion_logs[:10] %}
+                      <tr>
+                          <td>Video {{ log.video_id }}</td>
+                          <td>{{ log.timestamp }}</td>
+                          <td>{{ "%.1f"|format(log.confidence) }}%</td>
+                          <td>{{ log.detected_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      {% else %}
+          <div class="empty-state">
+              <i class="fas fa-chart-line"></i>
+              <h3>No confusion logs</h3>
+              <p>No confusion has been detected while watching videos yet.</p>
+              <a href="{{ url_for('courses') }}" class="btn">Start watching courses</a>
+          </div>
+      {% endif %}
+  </div>
+  
+  <div class="section">
+      <h2 class="section-title">Watch History</h2>
+      {% if watch_history and watch_history|length > 0 %}
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Video</th>
+                      <th>Watched At</th>
+                      <th>Duration Watched</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for history in watch_history %}
+                      <tr>
+                          <td>Video {{ history.video_id }}</td>
+                          <td>{{ history.watched_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                          <td>{{ history.duration_watched }} seconds</td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      {% else %}
+          <div class="empty-state">
+              <i class="fas fa-history"></i>
+              <h3>No watch history</h3>
+              <p>You haven't watched any videos yet.</p>
+              <a href="{{ url_for('courses') }}" class="btn">Browse courses</a>
+          </div>
+      {% endif %}
+  </div>
+</div>
+
+<footer>
+  <div class="footer-content">
+      <p class="footer-text">&copy; 2025 Confusion Detection. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // Prevent screenshots and screen recordings
+  document.addEventListener('keydown', function(e) {
+      // Detect print screen
+      if (e.key === 'PrintScreen' || 
+          (e.ctrlKey && e.key === 'p') || 
+          (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'E')) {
+          e.preventDefault();
+          alert("Screenshots and screen recordings are not allowed for security reasons.");
+      }
+  });
+  
+  // Disable right-click
+  document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled for security reasons.");
+  });
+</script>
+</body>
+</html>
+

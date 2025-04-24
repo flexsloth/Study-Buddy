@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Generator - Confusion Detection</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+  
+  :root {
+      --primary-color: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary-color: #7209b7;
+      --text-color: #333;
+      --text-light: #666;
+      --bg-color: #f8f9fa;
+      --white: #ffffff;
+      --success: #4CAF50;
+      --danger: #f44336;
+      --warning: #ff9800;
+      --info: #2196F3;
+      --border-radius: 12px;
+      --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+  }
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+  
+  body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+  }
+  
+  .navbar {
+      background-color: var(--white);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+  }
+  
+  .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+  
+  .navbar-brand {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+  }
+  
+  .navbar-brand i {
+      margin-right: 10px;
+      font-size: 28px;
+  }
+  
+  .navbar-nav {
+      display: flex;
+      list-style: none;
+  }
+  
+  .nav-item {
+      margin-left: 25px;
+  }
+  
+  .nav-link {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      padding: 5px 0;
+  }
+  
+  .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary-color);
+      transition: var(--transition);
+  }
+  
+  .nav-link:hover {
+      color: var(--primary-color);
+  }
+  
+  .nav-link:hover::after {
+      width: 100%;
+  }
+  
+  .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+  }
+  
+  .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+  }
+  
+  .page-title {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 15px;
+  }
+  
+  .page-subtitle {
+      font-size: 18px;
+      color: var(--text-light);
+      max-width: 700px;
+      margin: 0 auto;
+  }
+  
+  .quiz-generator {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 30px;
+      margin-bottom: 40px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  
+  .quiz-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+  }
+  
+  .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+  }
+  
+  .form-row {
+      display: flex;
+      gap: 20px;
+  }
+  
+  .form-row .form-group {
+      flex: 1;
+  }
+  
+  .form-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-color);
+  }
+  
+  .form-control {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: var(--transition);
+  }
+  
+  .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  }
+  
+  .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: var(--white);
+      padding: 12px 25px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+  }
+  
+  .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+  }
+  
+  .btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+  }
+  
+  .quiz-container {
+      margin-top: 40px;
+  }
+  
+  .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+  }
+  
+  .quiz-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-color);
+  }
+  
+  .quiz-meta {
+      font-size: 16px;
+      color: var(--text-light);
+  }
+  
+  .question-card {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 25px;
+      margin-bottom: 25px;
+      transition: var(--transition);
+  }
+  
+  .question-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .question-number {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: var(--white);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      font-weight: 600;
+      margin-right: 10px;
+  }
+  
+  .question-text {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 20px;
+      display: inline-block;
+  }
+  
+  .options-list {
+      list-style: none;
+      margin-bottom: 20px;
+  }
+  
+  .option-item {
+      margin-bottom: 12px;
+  }
+  
+  .option-label {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+  }
+  
+  .option-label:hover {
+      background-color: rgba(67, 97, 238, 0.05);
+      border-color: var(--primary-color);
+  }
+  
+  .option-radio {
+      margin-right: 15px;
+  }
+  
+  .option-text {
+      font-size: 16px;
+      color: var(--text-color);
+  }
+  
+  .explanation {
+      background-color: rgba(67, 97, 238, 0.05);
+      border-left: 4px solid var(--primary-color);
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 20px;
+      display: none;
+  }
+  
+  .explanation-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 5px;
+  }
+  
+  .explanation-text {
+      font-size: 14px;
+      color: var(--text-color);
+  }
+  
+  .show-answer-btn {
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+  }
+  
+  .show-answer-btn:hover {
+      background-color: rgba(67, 97, 238, 0.1);
+  }
+  
+  .quiz-results {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 25px;
+      margin-top: 30px;
+      text-align: center;
+      display: none;
+  }
+  
+  .results-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 15px;
+  }
+  
+  .score {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+  }
+  
+  .score-text {
+      font-size: 18px;
+      color: var(--text-light);
+      margin-bottom: 25px;
+  }
+  
+  .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+  }
+  
+  .correct-answer {
+      border-color: var(--success) !important;
+      background-color: rgba(76, 175, 80, 0.1) !important;
+  }
+  
+  .incorrect-answer {
+      border-color: var(--danger) !important;
+      background-color: rgba(244, 67, 54, 0.1) !important;
+  }
+  
+  .flash-messages {
+      margin-bottom: 30px;
+  }
+  
+  .flash-message {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+      font-size: 14px;
+      animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .flash-message.success {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+  }
+  
+  .flash-message.danger {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--danger);
+      border-left: 4px solid var(--danger);
+  }
+  
+  .flash-message.info {
+      background-color: rgba(33, 150, 243, 0.1);
+      color: var(--info);
+      border-left: 4px solid var(--info);
+  }
+  
+  .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+  }
+  
+  .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(67, 97, 238, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 15px;
+  }
+  
+  @keyframes spin {
+      to { transform: rotate(360deg); }
+  }
+  
+  footer {
+      background-color: var(--white);
+      padding: 30px 0;
+      text-align: center;
+      margin-top: 50px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+  }
+  
+  .footer-text {
+      font-size: 14px;
+      color: var(--text-light);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+      .page-title {
+          font-size: 28px;
+      }
+      
+      .page-subtitle {
+          font-size: 16px;
+      }
+      
+      .quiz-generator {
+          padding: 20px;
+      }
+      
+      .form-row {
+          flex-direction: column;
+          gap: 15px;
+      }
+      
+      .question-text {
+          font-size: 16px;
+      }
+  }
+  
+  @media (max-width: 576px) {
+      .quiz-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+      
+      .quiz-title {
+          font-size: 24px;
+      }
+      
+      .action-buttons {
+          flex-direction: column;
+          width: 100%;
+      }
+      
+      .action-buttons .btn {
+          width: 100%;
+      }
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-container">
+      <a href="{{ url_for('index') }}" class="navbar-brand">
+          <i class="fas fa-brain"></i> Confusion Detection
+      </a>
+      <ul class="navbar-nav">
+          <li class="nav-item">
+              <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('courses') }}" class="nav-link">Courses</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('recommend_courses') }}" class="nav-link">Recommendations</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('generate_quiz_page') }}" class="nav-link">Quiz</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('generate_roadmap_page') }}" class="nav-link">Roadmap</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('profile') }}" class="nav-link">Profile</a>
+          </li>
+          <li class="nav-item">
+              <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+          </li>
+      </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="flash-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="flash-message {{ category }}">{{ message }}</div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+  </div>
+  
+  <div class="page-header">
+      <h1 class="page-title">AI Quiz Generator</h1>
+      <p class="page-subtitle">Test your knowledge with personalized quizzes on any topic, generated by our AI system.</p>
+  </div>
+  
+  {% if not questions %}
+      <div class="quiz-generator">
+          <form method="POST" action="{{ url_for('generate_quiz_page') }}" class="quiz-form" id="quiz-form">
+              <div class="form-group">
+                  <label for="topic" class="form-label">What topic would you like to be quizzed on?</label>
+                  <input type="text" id="topic" name="topic" class="form-control" placeholder="e.g., Python Programming, Machine Learning, Web Development..." required>
+              </div>
+              
+              <div class="form-group">
+                  <label for="num_questions" class="form-label">Number of questions</label>
+                  <select id="num_questions" name="num_questions" class="form-control">
+                      <option value="5">5 questions</option>
+                      <option value="10">10 questions</option>
+                      <option value="15">15 questions</option>
+                  </select>
+              </div>
+              
+              <button type="submit" class="btn" id="submit-btn">Generate Quiz</button>
+          </form>
+      </div>
+      
+      <div class="loading" id="loading">
+          <div class="loading-spinner"></div>
+          <p>Generating your personalized quiz...</p>
+      </div>
+  {% else %}
+      <div class="quiz-container">
+          <div class="quiz-header">
+              <h2 class="quiz-title">Quiz on: {{ topic }}</h2>
+              <div class="quiz-meta">{{ questions|length }} questions</div>
+          </div>
+          
+          <form id="quiz-form">
+              {% for question in questions %}
+                  <div class="question-card" id="question-{{ loop.index }}">
+                      <div>
+                          <span class="question-number">{{ loop.index }}</span>
+                          <span class="question-text">{{ question.question }}</span>
+                      </div>
+                      
+                      <ul class="options-list">
+                          {% for option in question.options %}
+                              <li class="option-item">
+                                  <label class="option-label" data-option="{{ option }}">
+                                      <input type="radio" name="question-{{ loop.index }}" value="{{ option }}" class="option-radio">
+                                      <span class="option-text">{{ option }}</span>
+                                  </label>
+                              </li>
+                          {% endfor %}
+                      </ul>
+                      
+                      <button type="button" class="show-answer-btn" data-correct="{{ question.correct_answer }}" onclick="showAnswer(this, '{{ question.explanation }}')">Show Answer</button>
+                      
+                      <div class="explanation">
+                          <h4 class="explanation-title">Explanation:</h4>
+                          <p class="explanation-text">{{ question.explanation }}</p>
+                      </div>
+                  </div>
+              {% endfor %}
+              
+              <div class="action-buttons">
+                  <button type="button" class="btn" onclick="checkAnswers()">Check Answers</button>
+                  <a href="{{ url_for('generate_quiz_page') }}" class="btn" style="background-color: #6c757d;">Generate New Quiz</a>
+              </div>
+          </form>
+          
+          <div class="quiz-results" id="quiz-results">
+              <h3 class="results-title">Quiz Results</h3>
+              <div class="score" id="score">0/{{ questions|length }}</div>
+              <p class="score-text" id="score-text">Keep practicing to improve your knowledge!</p>
+              
+              <div class="action-buttons">
+                  <button type="button" class="btn" onclick="location.reload()">Try Again</button>
+                  <a href="{{ url_for('generate_quiz_page') }}" class="btn" style="background-color: #6c757d;">New Quiz</a>
+              </div>
+          </div>
+      </div>
+  {% endif %}
+</div>
+
+<footer>
+  <div class="footer-content">
+      <p class="footer-text">&copy; 2025 Confusion Detection. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  {% if not questions %}
+      // Show loading indicator when form is submitted
+      document.getElementById('quiz-form').addEventListener('submit', function() {
+          document.getElementById('loading').style.display = 'block';
+          document.getElementById('submit-btn').disabled = true;
+          document.getElementById('submit-btn').textContent = 'Generating...';
+      });
+  {% else %}
+      // Function to show answer and explanation
+      function showAnswer(button, explanation) {
+          const questionCard = button.closest('.question-card');
+          const correctAnswer = button.getAttribute('data-correct');
+          const options = questionCard.querySelectorAll('.option-label');
+          
+          // Highlight correct answer
+          options.forEach(option => {
+              if (option.getAttribute('data-option') === correctAnswer) {
+                  option.classList.add('correct-answer');
+              }
+          });
+          
+          // Show explanation
+          const explanationDiv = questionCard.querySelector('.explanation');
+          explanationDiv.style.display = 'block';
+          
+          // Disable button
+          button.disabled = true;
+          button.textContent = 'Answer Shown';
+      }
+      
+      // Function to check all answers
+      function checkAnswers() {
+          const questions = document.querySelectorAll('.question-card');
+          let correctAnswers = 0;
+          
+          questions.forEach(question => {
+              const questionNumber = question.id.split('-')[1];
+              const selectedOption = document.querySelector(`input[name="question-${questionNumber}"]:checked`);
+              const correctAnswer = question.querySelector('.show-answer-btn').getAttribute('data-correct');
+              
+              if (selectedOption) {
+                  const optionLabel = selectedOption.closest('.option-label');
+                  
+                  if (selectedOption.value === correctAnswer) {
+                      optionLabel.classList.add('correct-answer');
+                      correctAnswers++;
+                  } else {
+                      optionLabel.classList.add('incorrect-answer');
+                      
+                      // Highlight correct answer
+                      const options = question.querySelectorAll('.option-label');
+                      options.forEach(option => {
+                          if (option.getAttribute('data-option') === correctAnswer) {
+                              option.classList.add('correct-answer');
+                          }
+                      });
+                  }
+              }
+              
+              // Show explanation
+              const explanationDiv = question.querySelector('.explanation');
+              explanationDiv.style.display = 'block';
+              
+              // Disable radio buttons
+              const radioButtons = question.querySelectorAll('.option-radio');
+              radioButtons.forEach(radio => {
+                  radio.disabled = true;
+              });
+              
+              // Disable show answer button
+              const showAnswerBtn = question.querySelector('.show-answer-btn');
+              showAnswerBtn.disabled = true;
+              showAnswerBtn.textContent = 'Answer Shown';
+          });
+          
+          // Show results
+          const totalQuestions = questions.length;
+          document.getElementById('score').textContent = `${correctAnswers}/${totalQuestions}`;
+          
+          // Calculate percentage
+          const percentage = (correctAnswers / totalQuestions) * 100;
+          let scoreText = '';
+          
+          if (percentage >= 90) {
+              scoreText = 'Excellent! You have mastered this topic!';
+          } else if (percentage >= 70) {
+              scoreText = 'Good job! You have a solid understanding of this topic.';
+          } else if (percentage >= 50) {
+              scoreText = 'Not bad! Keep studying to improve your knowledge.';
+          } else {
+              scoreText = 'Keep practicing! This topic needs more study.';
+          }
+          
+          document.getElementById('score-text').textContent = scoreText;
+          document.getElementById('quiz-results').style.display = 'block';
+          
+          // Scroll to results
+          document.getElementById('quiz-results').scrollIntoView({ behavior: 'smooth' });
+      }
+  {% endif %}
+  
+  // Handle JSON parsing errors
+  window.addEventListener('load', function() {
+      const flashMessages = document.querySelectorAll('.flash-message');
+      for (let message of flashMessages) {
+          if (message.textContent.includes('Error parsing quiz questions')) {
+              // Add a more helpful message
+              message.innerHTML = 'Error generating quiz. Please try again with a different topic. <br>Our AI system is currently experiencing high demand.';
+          }
+      }
+  });
+  
+  // Prevent screenshots and screen recordings
+  document.addEventListener('keydown', function(e) {
+      // Detect print screen
+      if (e.key === 'PrintScreen' || 
+          (e.ctrlKey && e.key === 'p') || 
+          (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'E')) {
+          e.preventDefault();
+          alert("Screenshots and screen recordings are not allowed for security reasons.");
+      }
+  });
+  
+  // Disable right-click
+  document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      alert("Right-click is disabled for security reasons.");
+  });
+</script>
+</body>
+</html>
+
